@@ -65,13 +65,9 @@ const VIDEOINDEX = 'ad-video'
 const COUNTDOWNINDEX = 10
 const PINZHUANGURL = 'https://www.vivo.com/vivo/nexs/?cid=w-1-baidu_ada-xs'
 const PRETIME = 'ad-time'
-const SFHOST = 'https://m.baidu.com'
+const SFHOST = 'm.baidu.com'
 
-const isSF = window &&
-window.location &&
-window.location.ancestorOrigins &&
-window.location.ancestorOrigins[0] &&
-window.location.ancestorOrigins[0] === SFHOST
+const isSF = window.location.hostname === SFHOST
 
 let player = null
 let jSMpegPlayer = null
@@ -104,8 +100,8 @@ export default {
     }
   },
   created () {
-    this.initVideoIndex()
     this.timeExpired()
+    this.initVideoIndex()
     isShouldVideo = +customStorage.get(VIDEOINDEX) === 2 || false
     console.log('是否SF：' + (isSF || false) + '；页数：' + customStorage.get(VIDEOINDEX))
     if (isShouldVideo) {
@@ -288,11 +284,14 @@ export default {
       let preTime = customStorage.get(PRETIME)
       if (preTime == null) {
         customStorage.set(PRETIME, myDate)
+        return
       }
       let currentTime = myDate
       let diffTime = currentTime - preTime
-      let hoursDiff = parseInt(Math.abs(diffTime) / 1000 / 60 / 60)
-      if (hoursDiff >= 24) {
+      // let hoursDiff = parseInt(Math.abs(diffTime) / 1000 / 60 / 60)
+      let secondsDiff = parseInt(Math.abs(diffTime) / 1000)
+      if (secondsDiff >= 30) {
+      // if (hoursDiff >= 24) {
         customStorage.rm(VIDEOINDEX)
         customStorage.rm(PRETIME)
       }
